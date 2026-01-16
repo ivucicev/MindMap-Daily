@@ -2,6 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Lesson } from "../types";
 
+// Always use named parameter for apiKey
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
 export const getInterestSuggestions = async (currentInterests: string[]): Promise<string[]> => {
@@ -9,6 +10,7 @@ export const getInterestSuggestions = async (currentInterests: string[]): Promis
   Focus on high-growth fields, psychological frameworks, or influential books.
   Return only a JSON array of strings.`;
 
+  // Use gemini-3-flash-preview as recommended for basic tasks
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: prompt,
@@ -21,7 +23,8 @@ export const getInterestSuggestions = async (currentInterests: string[]): Promis
     }
   });
 
-  return JSON.parse(response.text);
+  // response.text is a property, not a method
+  return JSON.parse(response.text || '[]');
 };
 
 export const generateLesson = async (
@@ -43,8 +46,9 @@ export const generateLesson = async (
   - Practical Application: How to use this specific ${targetCategory} concept in real life.
   - Connection: A separate bridge to the previous theme.`;
 
+  // Use gemini-3-pro-preview for more complex tasks (educational generation)
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-3-pro-preview",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -63,7 +67,8 @@ export const generateLesson = async (
     }
   });
 
-  const data = JSON.parse(response.text);
+  // response.text is a property, not a method
+  const data = JSON.parse(response.text || '{}');
   return {
     ...data,
     categoryRef: targetCategory,

@@ -4,6 +4,7 @@ import { Lesson, UserProfile } from './types';
 import { generateLesson } from './services/geminiService';
 import InterestSelector from './components/InterestSelector';
 import LessonCard from './components/LessonCard';
+import GitHubView from './components/GitHubView';
 import { ACHIEVEMENTS, AVAILABLE_INTERESTS } from './constants';
 
 const App: React.FC = () => {
@@ -29,7 +30,7 @@ const App: React.FC = () => {
 
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(false);
-  const [view, setView] = useState<'onboarding' | 'lesson' | 'history' | 'achievements'>(
+  const [view, setView] = useState<'onboarding' | 'lesson' | 'history' | 'achievements' | 'github'> (
     (user.interests.length > 0 || (user.customInterests && user.customInterests.length > 0)) ? 'lesson' : 'onboarding'
   );
 
@@ -133,6 +134,12 @@ const App: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-2">
+           <button 
+             onClick={() => setView('github')} 
+             className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${theme === 'dark' ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-slate-100 text-slate-400 hover:text-slate-900'}`}
+           >
+             Docs
+           </button>
            <button onClick={toggleTheme} className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-slate-100 border-slate-200 hover:bg-slate-200'}`}>
              <span className="text-sm">{theme === 'dark' ? '☀️' : '🌙'}</span>
            </button>
@@ -196,23 +203,13 @@ const App: React.FC = () => {
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${interest?.color.split(' ')[0] || 'bg-indigo-500'}`}>
                       {interest?.icon || '📖'}
                     </div>
-                    <h2 className={`text-xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                      {interest?.name || catId}
-                    </h2>
-                    <div className={`flex-1 h-px ${theme === 'dark' ? 'bg-white/5' : 'bg-slate-100'}`}></div>
-                    <span className="text-[10px] font-black opacity-30 uppercase tracking-tighter">{lessonsArray.length} {lessonsArray.length === 1 ? 'Entry' : 'Entries'}</span>
+                    <h2 className={`text-xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{interest?.name || catId}</h2>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {lessonsArray.slice().reverse().map((h) => (
-                      <div key={h.id} className="card-glass p-6 rounded-[32px] shadow-sm hover:border-indigo-500/30 transition-all flex flex-col group relative overflow-hidden">
-                        <div className="flex justify-between items-start mb-4">
-                          <span className={`text-[10px] font-bold ${theme === 'dark' ? 'text-white/20' : 'text-slate-300'}`}>{h.date}</span>
-                        </div>
-                        <h3 className={`text-lg font-bold mb-3 line-clamp-2 leading-snug group-hover:text-indigo-500 transition-colors ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{h.title}</h3>
-                        <p className={`${theme === 'dark' ? 'text-white/40' : 'text-slate-500'} text-xs line-clamp-3 mb-6 leading-relaxed flex-1 font-medium`}>{h.content}</p>
-                        <button onClick={() => { setCurrentLesson(h); setView('lesson'); }} className={`w-full py-3 rounded-2xl text-[10px] font-bold transition-all uppercase tracking-widest ${theme === 'dark' ? 'bg-white/5 text-white/60 hover:bg-white hover:text-black' : 'bg-slate-100 text-slate-600 hover:bg-slate-900 hover:text-white'}`}>
-                          Recall
-                        </button>
+                    {lessonsArray.map(l => (
+                      <div key={l.id} className={`p-6 rounded-[32px] border ${theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-100 hover:border-slate-200 shadow-sm'} transition-all cursor-pointer`} onClick={() => { setCurrentLesson(l); setView('lesson'); }}>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${theme === 'dark' ? 'text-white/20' : 'text-slate-300'}`}>{l.date}</span>
+                        <h3 className={`font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{l.title}</h3>
                       </div>
                     ))}
                   </div>
@@ -221,71 +218,23 @@ const App: React.FC = () => {
             })}
           </div>
         )}
-
-        {view === 'achievements' && (
-          <div className="max-w-4xl w-full space-y-12 animate-in fade-in duration-700 pb-24">
-             <div className="text-center">
-               <h2 className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Mastery Levels</h2>
-               <p className={`${theme === 'dark' ? 'text-white/40' : 'text-slate-500'} text-sm mt-2 font-medium`}>Progress tracked across each independent neural track.</p>
-             </div>
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-               {[...user.interests, ...user.customInterests].map(id => {
-                 const interestObj = AVAILABLE_INTERESTS.find(i => i.id === id);
-                 const label = interestObj ? interestObj.name : id;
-                 const xp = user.categoryProgress?.[id] || 0;
-                 const level = Math.floor(xp / 50) + 1;
-                 const progress = (xp % 50) * 2; 
-                 return (
-                   <div key={id} className="card-glass p-6 rounded-[24px]">
-                      <div className="flex justify-between items-end mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">{interestObj?.icon || '📖'}</span>
-                          <span className={`font-bold text-sm ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{label}</span>
-                        </div>
-                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">LVL {level}</span>
-                      </div>
-                      <div className={`w-full h-2 ${theme === 'dark' ? 'bg-white/5' : 'bg-slate-100'} rounded-full overflow-hidden`}>
-                        <div className="h-full bg-indigo-500 transition-all duration-1000" style={{ width: `${Math.max(5, progress)}%` }} />
-                      </div>
-                      <div className="mt-2 flex justify-between items-center">
-                         <span className="text-[9px] text-slate-400 font-bold uppercase">{xp} XP Total</span>
-                         <span className="text-[9px] text-slate-400 font-bold uppercase">{50 - (xp % 50)} XP to LVL {level + 1}</span>
-                      </div>
-                   </div>
-                 )
-               })}
-             </div>
-          </div>
-        )}
-
-        {loading && (
-          <div className={`fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 ${theme === 'dark' ? 'bg-[#121212]/80 backdrop-blur-xl' : 'bg-white/80 backdrop-blur-xl'}`}>
-            <div className="relative">
-              <div className={`w-16 h-16 rounded-3xl border-2 ${theme === 'dark' ? 'border-white/10' : 'border-slate-200'} animate-[spin_3s_linear_infinite]`}></div>
-              <div className="absolute inset-0 w-16 h-16 rounded-3xl border-t-2 border-indigo-500 animate-spin"></div>
-            </div>
-            <p className={`font-black tracking-[0.3em] uppercase text-xs ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Synthesizing Neural Path</p>
-          </div>
-        )}
       </main>
 
-      <nav className={`fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1 p-2 backdrop-blur-2xl border rounded-[28px] z-50 shadow-2xl transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-white/90 border-slate-200'}`}>
-        <button onClick={() => setView('lesson')} className={navItemClass(view === 'lesson')}>
-          <span className="text-lg leading-none">⌬</span>
-          {view === 'lesson' && <span className="text-[10px] uppercase tracking-widest font-black">Core</span>}
-        </button>
-        <button onClick={() => setView('history')} className={navItemClass(view === 'history')}>
-          <span className="text-lg leading-none">⌘</span>
-          {view === 'history' && <span className="text-[10px] uppercase tracking-widest font-black">Log</span>}
-        </button>
-        <button onClick={() => setView('achievements')} className={navItemClass(view === 'achievements')}>
-          <span className="text-lg leading-none">◈</span>
-          {view === 'achievements' && <span className="text-[10px] uppercase tracking-widest font-black">Stats</span>}
-        </button>
-        <div className={`w-px h-6 mx-1 ${theme === 'dark' ? 'bg-white/10' : 'bg-slate-200'}`}></div>
-        <button onClick={() => setView('onboarding')} className={navItemClass(view === 'onboarding')}>
-          <span className="text-lg leading-none">⚙</span>
-        </button>
+      <nav className={`fixed bottom-0 left-0 right-0 p-4 z-30 sm:relative sm:p-6 sm:bg-transparent ${theme === 'dark' ? 'bg-black/80 backdrop-blur-xl border-t border-white/5' : 'bg-white/80 backdrop-blur-xl border-t border-slate-100'}`}>
+        <div className="max-w-md mx-auto flex justify-between items-center sm:gap-4">
+          <button onClick={() => setView('lesson')} className={navItemClass(view === 'lesson')}>
+            <span className="text-xl">⚡️</span>
+            <span className="hidden sm:inline text-xs tracking-widest uppercase">Current</span>
+          </button>
+          <button onClick={() => setView('history')} className={navItemClass(view === 'history')}>
+            <span className="text-xl">📚</span>
+            <span className="hidden sm:inline text-xs tracking-widest uppercase">Archives</span>
+          </button>
+          <button onClick={() => setView('onboarding')} className={navItemClass(view === 'onboarding')}>
+            <span className="text-xl">⚙️</span>
+            <span className="hidden sm:inline text-xs tracking-widest uppercase">Focus</span>
+          </button>
+        </div>
       </nav>
     </div>
   );
