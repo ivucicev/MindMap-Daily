@@ -3,7 +3,7 @@
   "name": "mindmap-daily",
   "version": "1.0.0",
   "description": "AI-powered intellectual companion for daily micro-learning.",
-  "homepage": "https://mindmap.github.io",
+  "homepage": "https://ivucicev.github.io/MindMap-Daily",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
