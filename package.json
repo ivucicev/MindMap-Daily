@@ -6,8 +6,6 @@
   "homepage": "https://mindmap.github.io",
   "scripts": {
     "start": "npx servor --reload",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "build": "echo 'Building for production...' && mkdir -p build && cp index.html build/ && cp index.tsx build/ && cp -r components build/ && cp -r services build/ && cp types.ts build/ && cp constants.tsx build/ && cp metadata.json build/"
   },
   "dependencies": {
@@ -16,6 +14,5 @@
     "@google/genai": "^1.36.0"
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
   }
 }

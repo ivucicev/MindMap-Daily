@@ -12,12 +12,13 @@ export interface Lesson {
   date: string;
   title: string;
   category: string;
-  categoryRef: string; // The ID of the primary interest this lesson belongs to
+  categoryRef: string; 
   content: string;
   practicalApplication: string;
   connectionToPrevious: string;
   sourceMaterial?: string;
   pointsEarned?: number;
+  isFavorite?: boolean; // New: track favorited lessons
 }
 
 export interface Achievement {
@@ -32,9 +33,10 @@ export interface UserProfile {
   interests: string[];
   customInterests: string[];
   history: Lesson[];
+  lessonQueue: Lesson[];
   streak: number;
   lastLessonDate?: string;
   totalPoints: number;
   unlockedAchievements: string[];
-  categoryProgress: Record<string, number>; // Mapping interest ID to total XP earned in that category
+  categoryProgress: Record<string, number>;
 }

@@ -22,7 +22,7 @@ Access the application here: [https://mindmap.github.io](https://mindmap.github.
 - **AI Model**: Gemini 3 Flash Preview (configured for JSON output)
 - **Styling**: Tailwind CSS with custom Dark/Light modes
 - **Persistence**: Browser-native `localStorage` for profiles and lesson history
-- **Deployment**: Configured for seamless hosting via **GitHub Pages**
+- **Deployment**: Automated via **GitHub Actions**
 
 ## 📦 Local Development
 
@@ -33,7 +33,7 @@ Access the application here: [https://mindmap.github.io](https://mindmap.github.
    ```
 
 2. **Environment Setup**:
-   Ensure you have an API key from [Google AI Studio](https://aistudio.google.com/). The app expects `process.env.API_KEY` to be available.
+   Ensure you have an API key from [Google AI Studio](https://aistudio.google.com/). The app expects `process.env.API_KEY` to be available in your execution environment.
 
 3. **Install & Run**:
    ```bash
@@ -41,15 +41,13 @@ Access the application here: [https://mindmap.github.io](https://mindmap.github.
    npm start
    ```
 
-## 🚢 Deployment to GitHub Pages
+## 🚢 Continuous Deployment
 
-The project includes a deployment script. To host it on your own GitHub account:
+This repository is configured to deploy automatically using **GitHub Actions**.
 
-1. Update the `"homepage"` field in `package.json` to your own URL.
-2. Run the deployment command:
-   ```bash
-   npm run deploy
-   ```
+1. Push your changes to the `main` branch.
+2. The `.github/workflows/deploy.yml` workflow will trigger automatically.
+3. Go to **Settings > Pages** in your GitHub repository and ensure the **Source** is set to **"GitHub Actions"**.
 
 ## 📄 License
 MIT License - feel free to use and adapt this for your own learning projects.

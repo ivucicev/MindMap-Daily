@@ -6,10 +6,12 @@ import { AVAILABLE_INTERESTS } from '../constants';
 interface Props {
   lesson: Lesson;
   onNext: () => void;
+  onMoreLikeThis: () => void;
+  onToggleFavorite: (id: string) => void;
   isLoading: boolean;
 }
 
-const LessonCard: React.FC<Props> = ({ lesson, onNext, isLoading }) => {
+const LessonCard: React.FC<Props> = ({ lesson, onNext, onMoreLikeThis, onToggleFavorite, isLoading }) => {
   const isLight = document.body.classList.contains('light-mode');
   const interest = AVAILABLE_INTERESTS.find(i => i.id === lesson.categoryRef) 
                 || { icon: '💡', color: 'bg-indigo-600' };
@@ -18,7 +20,7 @@ const LessonCard: React.FC<Props> = ({ lesson, onNext, isLoading }) => {
 
   return (
     <div className="w-full max-w-[420px] mx-auto animate-in fade-in zoom-in-95 duration-700 px-4">
-      <div className="card-glass rounded-[40px] overflow-hidden flex flex-col h-[650px] relative shadow-2xl group border-2 border-transparent hover:border-indigo-500/20 transition-all">
+      <div className="card-glass rounded-[40px] overflow-hidden flex flex-col h-[680px] relative shadow-2xl group border-2 border-transparent hover:border-indigo-500/20 transition-all">
         
         <div className="absolute bottom-0 right-0 w-full h-1/2 opacity-20 pointer-events-none">
           {patternSeed === 0 && (
@@ -55,12 +57,17 @@ const LessonCard: React.FC<Props> = ({ lesson, onNext, isLoading }) => {
           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-xl ${interest.color?.split(' ')[0] || 'bg-indigo-600'}`}>
             <span className="drop-shadow-md">{interest.icon}</span>
           </div>
-          <div className="text-right">
-            <span className={`block text-[10px] font-black tracking-[0.2em] uppercase ${isLight ? 'text-slate-400' : 'text-white/30'}`}>
-              Session Log • {lesson.date}
-            </span>
-            <span className="inline-block px-3 py-1 mt-2 rounded-full bg-indigo-500/10 text-indigo-500 text-[9px] font-black uppercase tracking-wider border border-indigo-500/20">
-              {lesson.category}
+          <div className="flex flex-col items-end">
+            <button 
+              onClick={() => onToggleFavorite(lesson.id)}
+              className={`p-2 rounded-xl transition-all ${lesson.isFavorite ? 'text-rose-500 scale-110' : (isLight ? 'text-slate-300 hover:text-slate-400' : 'text-white/20 hover:text-white/40')}`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3c1.54 0 2.946.654 3.937 1.706C12.614 3.654 14.02 3 15.563 3 18.536 3 21 5.322 21 8.25c0 3.924-2.438 7.11-4.73 9.272a25.115 25.115 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+              </svg>
+            </button>
+            <span className={`block text-[9px] font-black tracking-[0.2em] uppercase mt-1 ${isLight ? 'text-slate-400' : 'text-white/30'}`}>
+              Log • {lesson.date}
             </span>
           </div>
         </div>
@@ -96,17 +103,39 @@ const LessonCard: React.FC<Props> = ({ lesson, onNext, isLoading }) => {
                  </p>
                </section>
              )}
-
-             {lesson.sourceMaterial && (
-               <div className="pt-2">
-                 <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${isLight ? 'text-slate-300' : 'text-white/20'}`}>Source Intelligence: </span>
-                 <span className="text-indigo-500 text-[10px] font-black uppercase tracking-wider">{lesson.sourceMaterial}</span>
-               </div>
-             )}
           </div>
         </div>
 
-        <div className="p-8 z-10 pt-4 shrink-0">
+        <div className="p-8 z-10 pt-4 shrink-0 space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={onMoreLikeThis}
+              disabled={isLoading}
+              className={`py-4 rounded-2xl font-black text-[10px] uppercase tracking-wider active:scale-[0.98] transition-all flex items-center justify-center gap-2 border ${
+                isLight ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>More like this</span>
+            </button>
+            <button
+              onClick={() => onToggleFavorite(lesson.id)}
+              disabled={isLoading}
+              className={`py-4 rounded-2xl font-black text-[10px] uppercase tracking-wider active:scale-[0.98] transition-all flex items-center justify-center gap-2 border ${
+                lesson.isFavorite 
+                ? 'bg-rose-500/10 border-rose-500/30 text-rose-500' 
+                : (isLight ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-white/5 border-white/10 text-white hover:bg-white/10')
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill={lesson.isFavorite ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+              </svg>
+              <span>{lesson.isFavorite ? 'Saved' : 'Save'}</span>
+            </button>
+          </div>
+          
           <button
             onClick={onNext}
             disabled={isLoading}
@@ -118,8 +147,10 @@ const LessonCard: React.FC<Props> = ({ lesson, onNext, isLoading }) => {
               <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></span>
             ) : (
               <>
-                Advance Path
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                Next Path
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
               </>
             )}
           </button>
