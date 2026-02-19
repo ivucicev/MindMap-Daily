@@ -3,7 +3,7 @@
 
 > **Your Neural Learning Path, Synthesized Daily.**
 
-MindMap Daily is an AI-powered intellectual companion that generates personalized micro-lessons based on your specific interests. Using Gemini 3 Flash, it transforms complex subjects into digestible insights, building a "mental web" of interconnected knowledge.
+MindMap Daily is an AI-powered intellectual companion that generates personalized micro-lessons based on your specific interests. Using the OpenAI API, it transforms complex subjects into digestible insights, building a "mental web" of interconnected knowledge.
 
 ## 🚀 Live Demo
 Access the application here: [https://mindmap.github.io](https://mindmap.github.io)
@@ -11,7 +11,7 @@ Access the application here: [https://mindmap.github.io](https://mindmap.github.
 ## ✨ Key Features
 
 - **Intellectual Scope Definition**: Select from core disciplines (Psychology, Physics, Game Dev) or add your own custom books and niche topics.
-- **AI-Driven Synthesis**: Uses the `@google/genai` SDK to generate original, focused lesson content.
+- **AI-Driven Synthesis**: Uses the OpenAI SDK to generate original, focused lesson content.
 - **Neural Linking**: Bridges concepts between different sessions to show how disparate fields of study actually relate.
 - **Progress Tracking**: Gamified XP system, category-specific levels, and daily streaks.
 - **Contextual Suggestions**: AI suggests new areas of study based on your current intellectual profile.
@@ -19,10 +19,11 @@ Access the application here: [https://mindmap.github.io](https://mindmap.github.
 ## 🛠️ Technical Implementation
 
 - **Frontend**: React 19 (ES6 Modules)
-- **AI Model**: Gemini 3 Flash Preview (configured for JSON output)
+- **AI Model**: OpenAI model (configurable via `OPENAI_MODEL`)
 - **Styling**: Tailwind CSS with custom Dark/Light modes
 - **Persistence**: Browser-native `localStorage` for profiles and lesson history
 - **Deployment**: Automated via **GitHub Actions**
+- **Backend**: Node/Express proxy for OpenAI requests (`/api/*`)
 
 ## 📦 Local Development
 
@@ -33,11 +34,15 @@ Access the application here: [https://mindmap.github.io](https://mindmap.github.
    ```
 
 2. **Environment Setup**:
-   Ensure you have an API key from [Google AI Studio](https://aistudio.google.com/). The app expects `process.env.API_KEY` to be available in your execution environment.
+   Ensure you have an OpenAI API key from [platform.openai.com](https://platform.openai.com/). Create a `.env` file with `OPENAI_API_KEY=...`.
 
 3. **Install & Run**:
    ```bash
    npm install
+   npm run dev
+   ```
+   In a second terminal, run the API server:
+   ```bash
    npm start
    ```
 

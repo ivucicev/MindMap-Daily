@@ -2,12 +2,13 @@ import express from "express";
 import dotenv from "dotenv";
 import OpenAI from "openai";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const apiKey = process.env.OPENAI_API_KEY;
 const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
@@ -15,7 +16,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.json({ limit: "1mb" }));
-app.use(express.static(__dirname));
+
+const distDir = path.join(__dirname, "dist");
+const staticDir = fs.existsSync(distDir) ? distDir : __dirname;
+app.use(express.static(staticDir));
 
 const getClient = () => {
   if (!apiKey) {
@@ -105,7 +109,7 @@ app.get("*", (req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).send("Not found");
   }
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(staticDir, "index.html"));
 });
 
 app.listen(port, () => {
